@@ -42,4 +42,3 @@ export const sendMessage = async (message: string): Promise<string> => {
     return "Sorry, I couldn't process your message at this time.";
   }
 };
-
