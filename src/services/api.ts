@@ -28,7 +28,7 @@ export const sendMessage = async (message: string): Promise<string> => {
     const corsProxyUrl = `https://cors-anywhere.herokuapp.com/?${encodeURIComponent(apiUrl)}`;
     console.log("Using CORS proxy URL:", corsProxyUrl);
     
-    const response = await fetch(apiUrl, {
+    const response = await fetch(corsProxyUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
