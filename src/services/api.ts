@@ -21,27 +21,31 @@ export const sendMessage = async (message: string): Promise<string> => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
     
-    const response = await fetch(
-      "https://api.langflow.astra.datastax.com/lf/e637d789-67d3-4dd8-a7d5-44246994d0a7/api/v1/run/4957ff93-d8f4-4939-a15c-b5a9dd27a60d?stream=false",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer AstraCS:kOCtkqFQqpgjFnBaWToCUkoC:f6dc29a4ea7a91b02631a941591f053d1df639eb3033c0b3ca85e267a440a8b6",
-          // Add additional headers that might help with CORS
-          "Accept": "application/json",
-          "Cache-Control": "no-cache"
-        },
-        body: JSON.stringify({
-          input_value: message,
-          output_type: "chat",
-          input_type: "chat",
-        }),
-        signal: controller.signal,
-        // Ensure credentials are included
-        credentials: 'omit' // Try 'omit' instead of include/same-origin
-      }
-    );
+    // Try with a CORS proxy to bypass CORS restrictions
+    const apiUrl = "https://api.langflow.astra.datastax.com/lf/e637d789-67d3-4dd8-a7d5-44246994d0a7/api/v1/run/4957ff93-d8f4-4939-a15c-b5a9dd27a60d?stream=false";
+    const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
+    
+    console.log("Using CORS proxy URL:", corsProxyUrl);
+    
+    const response = await fetch(corsProxyUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer AstraCS:kOCtkqFQqpgjFnBaWToCUkoC:f6dc29a4ea7a91b02631a941591f053d1df639eb3033c0b3ca85e267a440a8b6",
+        "Accept": "application/json",
+        "Cache-Control": "no-cache",
+        "Access-Control-Allow-Origin": "*", // Request CORS headers
+        "X-Requested-With": "XMLHttpRequest"
+      },
+      body: JSON.stringify({
+        input_value: message,
+        output_type: "chat",
+        input_type: "chat",
+      }),
+      signal: controller.signal,
+      mode: "cors", // Explicitly set CORS mode
+      credentials: 'omit' // Omit credentials for CORS requests
+    });
     
     // Clear the timeout
     clearTimeout(timeoutId);
@@ -70,11 +74,13 @@ export const sendMessage = async (message: string): Promise<string> => {
     if (error.name === 'AbortError') {
       toast.error("Request timed out. The API took too long to respond.");
     } else if (error.message && error.message.includes("Failed to fetch")) {
-      toast.error("Network error. Please check your internet connection or try again later.");
+      toast.error("CORS error: Unable to access the API directly from the browser. Using proxy service.");
+    } else if (error.message && error.message.includes("NetworkError")) {
+      toast.error("Network error: The browser blocked the request due to CORS policy.");
     } else {
       toast.error("Failed to get a response. Please try again later.");
     }
     
-    return "Sorry, I couldn't process your message at this time. There may be an issue with the API connection.";
+    return "Sorry, I couldn't process your message at this time. There may be a CORS issue with the API connection.";
   }
 };
