@@ -25,7 +25,7 @@ export const sendMessage = async (message: string): Promise<string> => {
     const apiUrl = "https://api.langflow.astra.datastax.com/lf/e637d789-67d3-4dd8-a7d5-44246994d0a7/api/v1/run/4957ff93-d8f4-4939-a15c-b5a9dd27a60d?stream=false";
     const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
     
-    console.log("Using CORS proxy URL:", corsProxyUrl);
+    console.log("Using CORS proxy URL:", apiUrl);
     
     const response = await fetch(corsProxyUrl, {
       method: "POST",
