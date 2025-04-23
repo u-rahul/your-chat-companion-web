@@ -1,4 +1,6 @@
 
+import React from 'react';
+
 interface LangflowResponse {
   outputs: Array<{
     outputs: Array<{
@@ -19,7 +21,7 @@ export const sendMessage = async (message: string): Promise<string> => {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": "Bearer <YOUR_APPLICATION_TOKEN>",
+          "Authorization": "Bearer AstraCS:kOCtkqFQqpgjFnBaWToCUkoC:f6dc29a4ea7a91b02631a941591f053d1df639eb3033c0b3ca85e267a440a8b6",
         },
         body: JSON.stringify({
           input_value: message,
@@ -40,3 +42,4 @@ export const sendMessage = async (message: string): Promise<string> => {
     return "Sorry, I couldn't process your message at this time.";
   }
 };
+
