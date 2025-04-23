@@ -6,7 +6,7 @@ import { Message } from "@/types/chat";
 import { sendMessage } from "@/services/api";
 import { toast } from "@/components/ui/sonner";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
-import { ExclamationTriangleIcon } from "@radix-ui/react-icons";
+import { AlertTriangle } from "lucide-react";
 
 export const ChatContainer = () => {
   const [messages, setMessages] = useState<Message[]>([
@@ -79,7 +79,7 @@ export const ChatContainer = () => {
       
       {corsError && (
         <Alert variant="destructive" className="m-4">
-          <ExclamationTriangleIcon className="h-4 w-4" />
+          <AlertTriangle className="h-4 w-4" />
           <AlertTitle>CORS Error</AlertTitle>
           <AlertDescription>
             Your browser is blocking the API request due to Cross-Origin Resource Sharing (CORS) restrictions. 
