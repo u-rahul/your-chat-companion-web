@@ -4,9 +4,17 @@ import { ChatInput } from "./ChatInput";
 import { ChatMessage } from "./ChatMessage";
 import { Message } from "@/types/chat";
 import { sendMessage } from "@/services/api";
+import { toast } from "@/components/ui/sonner";
 
 export const ChatContainer = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>([
+    {
+      id: "welcome",
+      text: "Hello! How can I assist you today?",
+      isUser: false,
+      timestamp: new Date(),
+    }
+  ]);
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -30,8 +38,11 @@ export const ChatContainer = () => {
     setIsLoading(true);
 
     try {
+      console.log("Sending message:", text);
       // Get AI response
       const response = await sendMessage(text);
+      console.log("Received response:", response);
+      
       const aiMessage: Message = {
         id: (Date.now() + 1).toString(),
         text: response,
@@ -40,7 +51,8 @@ export const ChatContainer = () => {
       };
       setMessages((prev) => [...prev, aiMessage]);
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Error in chat flow:", error);
+      toast.error("Failed to get a response. Please try again later.");
     } finally {
       setIsLoading(false);
     }
