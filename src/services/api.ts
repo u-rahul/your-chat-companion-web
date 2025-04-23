@@ -27,7 +27,7 @@ export const sendMessage = async (message: string): Promise<string> => {
     
     console.log("Using CORS proxy URL:", corsProxyUrl);
     
-    const response = await fetch(corsProxyUrl, {
+    const response = await fetch(apiUrl, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
