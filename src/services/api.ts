@@ -32,7 +32,7 @@ export const sendMessage = async (message: string): Promise<string> => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer AstraCS:kOCtkqFQqpgjFnBaWToCUkoC:f6dc29a4ea7a91b02631a941591f053d1df639eb3033c0b3ca85e267a440a8b6",
+        "Authorization": "AstraCS:pIZpceOJlRLoFPnzQEZZDUBW:b6025723ae7f2a2f5971b7d2159a72444004ed140d10a475dff464d25e0dd47b",
         "Accept": "application/json",
         "Cache-Control": "no-cache",
         "Access-Control-Allow-Origin": "*", // Request CORS headers
