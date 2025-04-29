@@ -22,7 +22,7 @@ export const sendMessage = async (message: string): Promise<string> => {
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
     
     // Try with a CORS proxy to bypass CORS restrictions
-    const apiUrl = "https://api.langflow.astra.datastax.com/lf/e637d789-67d3-4dd8-a7d5-44246994d0a7/api/v1/run/4957ff93-d8f4-4939-a15c-b5a9dd27a60d?stream=false";
+    const apiUrl = "https://api.langflow.astra.datastax.com/lf/3ab69190-2535-4261-ad71-ea0de9b902bc/api/v1/run/b3c8627a-e65a-434c-a2b2-12f9cd0fdd20?stream=false";
     
     // const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
    // const corsProxyUrl = `https://cors-anywhere.herokuapp.com/?${encodeURIComponent(apiUrl)}`;
@@ -33,7 +33,7 @@ export const sendMessage = async (message: string): Promise<string> => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer AstraCS:pIZpceOJlRLoFPnzQEZZDUBW:b6025723ae7f2a2f5971b7d2159a72444004ed140d10a475dff464d25e0dd47b",
+        "Authorization": "Bearer AstraCS:RLRKtILLivAftxIYOjgHCgEv:87fa246f37d3883e01b309f5d561568c8bc1993a3b43801b2d7ecb24678adfff",
         "Accept": "application/json",
         "Cache-Control": "no-cache",
         "Access-Control-Allow-Origin": "*", // Request CORS headers
