@@ -12,7 +12,7 @@ export const ChatContainer = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      text: "Hello! How can I assist you today? (Note: If you experience connection issues, this might be due to CORS restrictions in your browser.)",
+      text: "Hello! How can I assist you today? You can also share PDF files (up to 5MB) with your questions.",
       isUser: false,
       timestamp: new Date(),
     }
@@ -29,22 +29,35 @@ export const ChatContainer = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async (text: string) => {
+  const handleSendMessage = async (text: string, file?: File) => {
+    let fileData: Message["attachment"] | undefined = undefined;
+    
+    // Create attachment data if file is provided
+    if (file) {
+      fileData = {
+        name: file.name,
+        type: file.type,
+        size: file.size,
+        url: URL.createObjectURL(file)
+      };
+    }
+    
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
-      text,
+      text: text || (file ? `Attached file: ${file.name}` : ""),
       isUser: true,
       timestamp: new Date(),
+      attachment: fileData
     };
     setMessages((prev) => [...prev, userMessage]);
     setIsLoading(true);
     setCorsError(false);
 
     try {
-      console.log("Sending message:", text);
+      console.log("Sending message:", text, file);
       // Get AI response
-      const response = await sendMessage(text);
+      const response = await sendMessage(text, file);
       console.log("Received response:", response);
       
       const aiMessage: Message = {

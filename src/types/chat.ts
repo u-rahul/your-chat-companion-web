@@ -4,4 +4,11 @@ export interface Message {
   text: string;
   isUser: boolean;
   timestamp: Date;
+  attachment?: {
+    name: string;
+    url: string;
+    type: string;
+    size: number;
+  };
 }
+

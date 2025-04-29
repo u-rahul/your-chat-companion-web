@@ -13,9 +13,12 @@ interface LangflowResponse {
   }>;
 }
 
-export const sendMessage = async (message: string): Promise<string> => {
+export const sendMessage = async (message: string, file?: File): Promise<string> => {
   try {
     console.log("Sending message to API:", message);
+    if (file) {
+      console.log("With file:", file.name, file.type, file.size);
+    }
     
     // Add a timeout to the fetch request
     const controller = new AbortController();
@@ -24,29 +27,45 @@ export const sendMessage = async (message: string): Promise<string> => {
     // Try with a CORS proxy to bypass CORS restrictions
     const apiUrl = "https://api.langflow.astra.datastax.com/lf/3ab69190-2535-4261-ad71-ea0de9b902bc/api/v1/run/b3c8627a-e65a-434c-a2b2-12f9cd0fdd20?stream=false";
     
-    // const corsProxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
-   // const corsProxyUrl = `https://cors-anywhere.herokuapp.com/?${encodeURIComponent(apiUrl)}`;
     const corsProxyUrl = `https://cors-8x10.onrender.com/${apiUrl}`;
     console.log("Using CORS proxy URL:", corsProxyUrl);
     
-    const response = await fetch(corsProxyUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer AstraCS:RLRKtILLivAftxIYOjgHCgEv:87fa246f37d3883e01b309f5d561568c8bc1993a3b43801b2d7ecb24678adfff",
-        "Accept": "application/json",
-        "Cache-Control": "no-cache",
-        "Access-Control-Allow-Origin": "*", // Request CORS headers
-        "X-Requested-With": "XMLHttpRequest"
-      },
-      body: JSON.stringify({
+    // Create form data if file is provided
+    let body;
+    
+    if (file) {
+      const formData = new FormData();
+      formData.append("input_value", message || "");
+      formData.append("file", file);
+      formData.append("output_type", "chat");
+      formData.append("input_type", "chat");
+      body = formData;
+    } else {
+      body = JSON.stringify({
         input_value: message,
         output_type: "chat",
         input_type: "chat",
-      }),
-      // signal: controller.signal,
-      // mode: "cors", // Explicitly set CORS mode
-      // credentials: 'omit' // Omit credentials for CORS requests
+      });
+    }
+    
+    const headers: HeadersInit = {
+      "Authorization": "Bearer AstraCS:RLRKtILLivAftxIYOjgHCgEv:87fa246f37d3883e01b309f5d561568c8bc1993a3b43801b2d7ecb24678adfff",
+      "Accept": "application/json",
+      "Cache-Control": "no-cache",
+      "Access-Control-Allow-Origin": "*",
+      "X-Requested-With": "XMLHttpRequest"
+    };
+    
+    // Only add Content-Type for JSON requests
+    if (!file) {
+      headers["Content-Type"] = "application/json";
+    }
+    
+    const response = await fetch(corsProxyUrl, {
+      method: "POST",
+      headers,
+      body,
+      signal: controller.signal,
     });
     
     // Clear the timeout
