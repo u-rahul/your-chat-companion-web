@@ -43,14 +43,22 @@ export const sendMessage = async (message: string, file?: File): Promise<string>
     let body;
     
     if (file) {
-      // For file uploads, create FormData without setting Content-Type header
-      // The browser will automatically set the correct multipart/form-data Content-Type with boundary
-      const formData = new FormData();
-      formData.append("input_value", message || "");
-      formData.append("file", file);
-      formData.append("output_type", "chat");
-      formData.append("input_type", "chat");
-      body = formData;
+      // For file uploads, use fetch's Blob processing
+      // Convert the file to base64 to avoid binary encoding issues
+      const base64File = await fileToBase64(file);
+      
+      // Include the base64 file in the JSON payload
+      headers["Content-Type"] = "application/json";
+      body = JSON.stringify({
+        input_value: message || "",
+        output_type: "chat",
+        input_type: "chat",
+        file_data: {
+          name: file.name,
+          type: file.type,
+          data: base64File
+        }
+      });
     } else {
       // For text-only messages, set Content-Type header
       headers["Content-Type"] = "application/json";
@@ -104,4 +112,21 @@ export const sendMessage = async (message: string, file?: File): Promise<string>
     
     return "Sorry, I couldn't process your message at this time. There may be a CORS issue with the API connection.";
   }
+};
+
+// Helper function to convert file to base64
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      // Extract the base64 data from the result
+      // Format is "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
+      const base64String = reader.result as string;
+      // Extract only the base64 part (after the comma)
+      const base64Data = base64String.split(',')[1];
+      resolve(base64Data);
+    };
+    reader.onerror = (error) => reject(error);
+  });
 };
