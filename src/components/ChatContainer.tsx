@@ -12,7 +12,7 @@ export const ChatContainer = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      text: "Hello! How can I assist you today? You can also share PDF files (up to 5MB) with your questions.",
+      text: "Hello! How can I assist you today? You can also share PNG or JPEG images (up to 5MB) with your questions.",
       isUser: false,
       timestamp: new Date(),
     }
@@ -45,7 +45,7 @@ export const ChatContainer = () => {
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: text || (file ? `Attached file: ${file.name}` : ""),
+      text: text || (file ? `Attached image: ${file.name}` : ""),
       isUser: true,
       timestamp: new Date(),
       attachment: fileData
