@@ -24,30 +24,14 @@ export const sendMessage = async (message: string, file?: File): Promise<string>
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
     
-    // Try with a CORS proxy to bypass CORS restrictions
+    // API URL
     const apiUrl = "https://api.langflow.astra.datastax.com/lf/3ab69190-2535-4261-ad71-ea0de9b902bc/api/v1/run/b3c8627a-e65a-434c-a2b2-12f9cd0fdd20?stream=false";
     
+    // Use the same proxy URL approach for both types of requests
     const corsProxyUrl = `https://cors-8x10.onrender.com/${apiUrl}`;
     console.log("Using CORS proxy URL:", corsProxyUrl);
     
-    // Create form data if file is provided
-    let body;
-    
-    if (file) {
-      const formData = new FormData();
-      formData.append("input_value", message || "");
-      formData.append("file", file);
-      formData.append("output_type", "chat");
-      formData.append("input_type", "chat");
-      body = formData;
-    } else {
-      body = JSON.stringify({
-        input_value: message,
-        output_type: "chat",
-        input_type: "chat",
-      });
-    }
-    
+    // Prepare headers - same for both request types
     const headers: HeadersInit = {
       "Authorization": "Bearer AstraCS:RLRKtILLivAftxIYOjgHCgEv:87fa246f37d3883e01b309f5d561568c8bc1993a3b43801b2d7ecb24678adfff",
       "Accept": "application/json",
@@ -56,9 +40,25 @@ export const sendMessage = async (message: string, file?: File): Promise<string>
       "X-Requested-With": "XMLHttpRequest"
     };
     
-    // Only add Content-Type for JSON requests
-    if (!file) {
+    let body;
+    
+    if (file) {
+      // For file uploads, create FormData without setting Content-Type header
+      // The browser will automatically set the correct multipart/form-data Content-Type with boundary
+      const formData = new FormData();
+      formData.append("input_value", message || "");
+      formData.append("file", file);
+      formData.append("output_type", "chat");
+      formData.append("input_type", "chat");
+      body = formData;
+    } else {
+      // For text-only messages, set Content-Type header
       headers["Content-Type"] = "application/json";
+      body = JSON.stringify({
+        input_value: message,
+        output_type: "chat",
+        input_type: "chat",
+      });
     }
     
     const response = await fetch(corsProxyUrl, {
