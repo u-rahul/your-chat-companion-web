@@ -20,9 +20,9 @@ export const sendMessage = async (message: string, file?: File): Promise<string>
       console.log("With file:", file.name, file.type, file.size);
     }
     
-    // Add a timeout to the fetch request
+    // Add a timeout to the fetch request - increased to 2 minutes (120000ms)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
+    const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
     
     // API URL
     const apiUrl = "https://api.langflow.astra.datastax.com/lf/3ab69190-2535-4261-ad71-ea0de9b902bc/api/v1/run/b3c8627a-e65a-434c-a2b2-12f9cd0fdd20?stream=false";
