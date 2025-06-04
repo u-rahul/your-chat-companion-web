@@ -4,6 +4,7 @@ export interface Message {
   text: string;
   isUser: boolean;
   timestamp: Date;
+  isLoading?: boolean;
   attachment?: {
     name: string;
     url: string;
@@ -11,4 +12,3 @@ export interface Message {
     size: number;
   };
 }
-

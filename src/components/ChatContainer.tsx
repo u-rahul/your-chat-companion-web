@@ -51,8 +51,35 @@ export const ChatContainer = () => {
       attachment: fileData
     };
     setMessages((prev) => [...prev, userMessage]);
+    
+    // Add loading message
+    const loadingMessage: Message = {
+      id: (Date.now() + 1).toString(),
+      text: "Thinking...",
+      isUser: false,
+      timestamp: new Date(),
+      isLoading: true
+    };
+    setMessages((prev) => [...prev, loadingMessage]);
+    
     setIsLoading(true);
     setCorsError(false);
+
+    // Set up 30-second timeout
+    const timeoutId = setTimeout(() => {
+      setMessages((prev) => 
+        prev.map((msg) => 
+          msg.id === loadingMessage.id 
+            ? {
+                ...msg,
+                text: "Sorry, We ran out of Open AI credits. Please try again after some time",
+                isLoading: false
+              }
+            : msg
+        )
+      );
+      setIsLoading(false);
+    }, 30000);
 
     try {
       console.log("Sending message:", text, file);
@@ -60,15 +87,26 @@ export const ChatContainer = () => {
       const response = await sendMessage(text, file);
       console.log("Received response:", response);
       
-      const aiMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        text: response,
-        isUser: false,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, aiMessage]);
+      // Clear the timeout since we got a response
+      clearTimeout(timeoutId);
+      
+      // Update the loading message with the actual response
+      setMessages((prev) => 
+        prev.map((msg) => 
+          msg.id === loadingMessage.id 
+            ? {
+                ...msg,
+                text: response,
+                isLoading: false
+              }
+            : msg
+        )
+      );
     } catch (error) {
       console.error("Error in chat flow:", error);
+      
+      // Clear the timeout
+      clearTimeout(timeoutId);
       
       // Check if error is related to CORS
       if (error.message && (
@@ -77,6 +115,19 @@ export const ChatContainer = () => {
           error.message.includes("Failed to fetch"))) {
         setCorsError(true);
       }
+      
+      // Update the loading message with error
+      setMessages((prev) => 
+        prev.map((msg) => 
+          msg.id === loadingMessage.id 
+            ? {
+                ...msg,
+                text: "Failed to get a response. Please try again later.",
+                isLoading: false
+              }
+            : msg
+        )
+      );
       
       toast.error("Failed to get a response. Please try again later.");
     } finally {

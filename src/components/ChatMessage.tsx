@@ -2,7 +2,7 @@
 import { cn } from "@/lib/utils";
 import { Message } from "@/types/chat";
 import { format } from "date-fns";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, Loader2 } from "lucide-react";
 
 interface ChatMessageProps {
   message: Message;
@@ -24,7 +24,12 @@ export const ChatMessage = ({ message }: ChatMessageProps) => {
             : "bg-gray-100 text-gray-800"
         )}
       >
-        <p className="text-sm">{message.text}</p>
+        <div className="flex items-center gap-2">
+          {message.isLoading && (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          )}
+          <p className="text-sm">{message.text}</p>
+        </div>
         
         {message.attachment && (
           <div className={`mt-2 rounded ${message.isUser ? 'bg-purple-600' : 'bg-gray-200'}`}>
