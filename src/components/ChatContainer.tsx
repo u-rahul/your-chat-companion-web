@@ -1,4 +1,3 @@
-
 import { useEffect, useRef, useState } from "react";
 import { ChatInput } from "./ChatInput";
 import { ChatMessage } from "./ChatMessage";
@@ -12,7 +11,7 @@ export const ChatContainer = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      text: "Hello! How can I assist you today? You can also share PNG or JPEG images (up to 5MB) with your questions.",
+      text: "You may be wondering - who am I?",
       isUser: false,
       timestamp: new Date(),
     }
