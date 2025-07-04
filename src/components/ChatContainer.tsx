@@ -11,7 +11,7 @@ export const ChatContainer = () => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      text: "You may be wondering - who am I?",
+      text: "Hello! I'm your AI Companion - You may be wondering - who am I?",
       isUser: false,
       timestamp: new Date(),
     }
