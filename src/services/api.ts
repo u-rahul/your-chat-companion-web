@@ -2,11 +2,34 @@
 import { toast } from "@/components/ui/sonner";
 
 interface LangflowResponse {
+  session_id: string;
   outputs: Array<{
+    inputs: {
+      input_value: string;
+    };
     outputs: Array<{
       results: {
         message: {
           text: string;
+          sender: string;
+          sender_name: string;
+          session_id: string;
+          timestamp: string;
+          files: any[];
+          error: boolean;
+        };
+      };
+      artifacts: {
+        message: string;
+        sender: string;
+        sender_name: string;
+        files: any[];
+        type: string;
+      };
+      outputs: {
+        message: {
+          message: string;
+          type: string;
         };
       };
     }>;
@@ -24,16 +47,17 @@ export const sendMessage = async (message: string, file?: File): Promise<string>
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
     
-    // API URL
-    const apiUrl = "https://api.langflow.astra.datastax.com/lf/3ab69190-2535-4261-ad71-ea0de9b902bc/api/v1/run/b3c8627a-e65a-434c-a2b2-12f9cd0fdd20?stream=false";
+    // New API URL
+    const apiUrl = "https://api.langflow.astra.datastax.com/lf/e637d789-67d3-4dd8-a7d5-44246994d0a7/api/v1/run/4957ff93-d8f4-4939-a15c-b5a9dd27a60d?stream=false";
     
     // Use the same proxy URL approach for both types of requests
     const corsProxyUrl = `https://cors-8x10.onrender.com/${apiUrl}`;
     console.log("Using CORS proxy URL:", corsProxyUrl);
     
-    // Prepare headers - same for both request types
+    // Prepare headers with new authorization token
     const headers: HeadersInit = {
-      "Authorization": "Bearer AstraCS:RLRKtILLivAftxIYOjgHCgEv:87fa246f37d3883e01b309f5d561568c8bc1993a3b43801b2d7ecb24678adfff",
+      "Authorization": "Bearer AstraCS:cjZjuYwkuFpEipbNaewrhtZw:52a7ad52ebef9851909557995d6a2a6d5cf127bfd46acdf33a0cc7050c915522",
+      "Content-Type": "application/json",
       "Accept": "application/json",
       "Cache-Control": "no-cache",
       "Access-Control-Allow-Origin": "*",
@@ -48,7 +72,6 @@ export const sendMessage = async (message: string, file?: File): Promise<string>
       const base64File = await fileToBase64(file);
       
       // Include the base64 file in the JSON payload
-      headers["Content-Type"] = "application/json";
       body = JSON.stringify({
         input_value: message || "",
         output_type: "chat",
@@ -60,8 +83,7 @@ export const sendMessage = async (message: string, file?: File): Promise<string>
         }
       });
     } else {
-      // For text-only messages, set Content-Type header
-      headers["Content-Type"] = "application/json";
+      // For text-only messages
       body = JSON.stringify({
         input_value: message,
         output_type: "chat",
@@ -90,6 +112,7 @@ export const sendMessage = async (message: string, file?: File): Promise<string>
     const data: LangflowResponse = await response.json();
     console.log("API response data:", data);
     
+    // Extract the message text from the new response structure
     if (!data.outputs || !data.outputs[0]?.outputs || !data.outputs[0]?.outputs[0]?.results?.message?.text) {
       console.error("Invalid response format:", data);
       throw new Error("Invalid response format from API");
