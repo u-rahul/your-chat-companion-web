@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { ChatInput } from "./ChatInput";
 import { ChatMessage } from "./ChatMessage";
@@ -28,26 +29,13 @@ export const ChatContainer = () => {
     scrollToBottom();
   }, [messages]);
 
-  const handleSendMessage = async (text: string, file?: File) => {
-    let fileData: Message["attachment"] | undefined = undefined;
-    
-    // Create attachment data if file is provided
-    if (file) {
-      fileData = {
-        name: file.name,
-        type: file.type,
-        size: file.size,
-        url: URL.createObjectURL(file)
-      };
-    }
-    
+  const handleSendMessage = async (text: string) => {
     // Add user message
     const userMessage: Message = {
       id: Date.now().toString(),
-      text: text || (file ? `Attached image: ${file.name}` : ""),
+      text,
       isUser: true,
       timestamp: new Date(),
-      attachment: fileData
     };
     setMessages((prev) => [...prev, userMessage]);
     
@@ -81,9 +69,9 @@ export const ChatContainer = () => {
     }, 30000);
 
     try {
-      console.log("Sending message:", text, file);
+      console.log("Sending message:", text);
       // Get AI response
-      const response = await sendMessage(text, file);
+      const response = await sendMessage(text);
       console.log("Received response:", response);
       
       // Clear the timeout since we got a response

@@ -36,12 +36,9 @@ interface LangflowResponse {
   }>;
 }
 
-export const sendMessage = async (message: string, file?: File): Promise<string> => {
+export const sendMessage = async (message: string): Promise<string> => {
   try {
     console.log("Sending message to API:", message);
-    if (file) {
-      console.log("With file:", file.name, file.type, file.size);
-    }
     
     // Add a timeout to the fetch request - increased to 2 minutes (120000ms)
     const controller = new AbortController();
@@ -64,32 +61,12 @@ export const sendMessage = async (message: string, file?: File): Promise<string>
       "X-Requested-With": "XMLHttpRequest"
     };
     
-    let body;
-    
-    if (file) {
-      // For file uploads, use fetch's Blob processing
-      // Convert the file to base64 to avoid binary encoding issues
-      const base64File = await fileToBase64(file);
-      
-      // Include the base64 file in the JSON payload
-      body = JSON.stringify({
-        input_value: message || "",
-        output_type: "chat",
-        input_type: "chat",
-        file_data: {
-          name: file.name,
-          type: file.type,
-          data: base64File
-        }
-      });
-    } else {
-      // For text-only messages
-      body = JSON.stringify({
-        input_value: message,
-        output_type: "chat",
-        input_type: "chat",
-      });
-    }
+    // For text-only messages
+    const body = JSON.stringify({
+      input_value: message,
+      output_type: "chat",
+      input_type: "chat",
+    });
     
     const response = await fetch(corsProxyUrl, {
       method: "POST",
@@ -135,21 +112,4 @@ export const sendMessage = async (message: string, file?: File): Promise<string>
     
     return "Sorry, I couldn't process your message at this time. There may be a CORS issue with the API connection.";
   }
-};
-
-// Helper function to convert file to base64
-const fileToBase64 = (file: File): Promise<string> => {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => {
-      // Extract the base64 data from the result
-      // Format is "data:image/jpeg;base64,/9j/4AAQSkZJRg..."
-      const base64String = reader.result as string;
-      // Extract only the base64 part (after the comma)
-      const base64Data = base64String.split(',')[1];
-      resolve(base64Data);
-    };
-    reader.onerror = (error) => reject(error);
-  });
 };

@@ -5,10 +5,4 @@ export interface Message {
   isUser: boolean;
   timestamp: Date;
   isLoading?: boolean;
-  attachment?: {
-    name: string;
-    url: string;
-    type: string;
-    size: number;
-  };
 }
