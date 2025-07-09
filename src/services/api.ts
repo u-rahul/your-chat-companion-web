@@ -53,7 +53,7 @@ export const sendMessage = async (message: string): Promise<string> => {
     
     // Prepare headers with new authorization token
     const headers: HeadersInit = {
-      "Authorization": "Bearer AstraCS:cjZjuYwkuFpEipbNaewrhtZw:52a7ad52ebef9851909557995d6a2a6d5cf127bfd46acdf33a0cc7050c915522",
+      "Authorization": "Bearer AstraCS:yZDCyliTdXUpcTrHDzNdzbIj:ccc4a0f6ddcc9ef170f72935303a42e8a6ae2f73da6ed2fe975d21a72db8a887",
       "Content-Type": "application/json",
       "Accept": "application/json",
       "Cache-Control": "no-cache",
