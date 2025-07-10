@@ -52,21 +52,6 @@ export const ChatContainer = () => {
     setIsLoading(true);
     setCorsError(false);
 
-    // Set up 30-second timeout
-    const timeoutId = setTimeout(() => {
-      setMessages((prev) => 
-        prev.map((msg) => 
-          msg.id === loadingMessage.id 
-            ? {
-                ...msg,
-                text: "Sorry, We ran out of Open AI credits. Please try again after some time",
-                isLoading: false
-              }
-            : msg
-        )
-      );
-      setIsLoading(false);
-    }, 30000);
 
     try {
       console.log("Sending message:", text);
@@ -74,8 +59,6 @@ export const ChatContainer = () => {
       const response = await sendMessage(text);
       console.log("Received response:", response);
       
-      // Clear the timeout since we got a response
-      clearTimeout(timeoutId);
       
       // Update the loading message with the actual response
       setMessages((prev) => 
@@ -92,8 +75,6 @@ export const ChatContainer = () => {
     } catch (error) {
       console.error("Error in chat flow:", error);
       
-      // Clear the timeout
-      clearTimeout(timeoutId);
       
       // Check if error is related to CORS
       if (error.message && (

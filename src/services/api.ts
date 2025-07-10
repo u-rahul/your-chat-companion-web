@@ -40,9 +40,9 @@ export const sendMessage = async (message: string): Promise<string> => {
   try {
     console.log("Sending message to API:", message);
     
-    // Add a timeout to the fetch request - increased to 2 minutes (120000ms)
+    // Add a timeout to the fetch request - 5 minutes (300000ms)
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minute timeout
+    const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 minute timeout
     
     // New API URL
     const apiUrl = "https://api.langflow.astra.datastax.com/lf/e637d789-67d3-4dd8-a7d5-44246994d0a7/api/v1/run/4957ff93-d8f4-4939-a15c-b5a9dd27a60d?stream=false";
